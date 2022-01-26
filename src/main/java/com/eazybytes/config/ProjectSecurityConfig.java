@@ -69,12 +69,14 @@ public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
 //// ################################################################
 
 // ################################################################
-//	Using MySql
-	@Bean
-	public UserDetailsService userDetailsService(DataSource dataSource) {
-		// the dataSource is created by Spring using the database info in application.properties
-		return new JdbcUserDetailsManager(dataSource);
-	}
+//	Using MySql. The user 'happy' with password '12345' is manually created in the database.
+	
+	// The default UserDetailsService bean is no longer needed since EazyBankUserDetails.java is UserDetailsService.
+//	@Bean
+//	public UserDetailsService userDetailsService(DataSource dataSource) {
+//		// the dataSource is created by Spring using the database info in application.properties
+//		return new JdbcUserDetailsManager(dataSource);
+//	}
 	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
