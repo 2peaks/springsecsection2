@@ -76,6 +76,8 @@ public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
+		// You can get BCrypt value to enter into the database to update existing password in plain text
+		// from https://bcrypt-generator.com/
 		return new BCryptPasswordEncoder();
 	}
 // ################################################################
