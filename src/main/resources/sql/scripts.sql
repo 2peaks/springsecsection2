@@ -9,14 +9,14 @@ CREATE TABLE `users` (
 `enabled` INT NOT NULL,
 PRIMARY KEY (`id`));
 
-CREATE TABLE `authorities` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(45) NOT NULL,
-  `authority` varchar(45) NOT NULL,
-  PRIMARY KEY (`id`));
+--CREATE TABLE `authorities` (
+--  `id` int NOT NULL AUTO_INCREMENT,
+--  `username` varchar(45) NOT NULL,
+--  `authority` varchar(45) NOT NULL,
+--  PRIMARY KEY (`id`));
 
 INSERT IGNORE INTO `users` VALUES (NULL, 'happy', '12345', '1');
-INSERT IGNORE INTO `authorities` VALUES (NULL, 'happy', 'write');
+--INSERT IGNORE INTO `authorities` VALUES (NULL, 'happy', 'write');
  
 CREATE TABLE `customer` (
   `customer_id` int NOT NULL AUTO_INCREMENT,
@@ -177,3 +177,21 @@ CREATE TABLE `contact_messages` (
   `create_dt` date DEFAULT NULL,
   PRIMARY KEY (`contact_id`)
 );
+
+CREATE TABLE `authorities` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `customer_id` int NOT NULL,
+  `name` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `customer_id` (`customer_id`),
+  CONSTRAINT `authorities_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`customer_id`)
+);
+
+INSERT INTO `authorities` (`customer_id`, `name`)
+ VALUES (1, 'READ');
+ 
+INSERT INTO `authorities` (`customer_id`, `name`)
+ VALUES (1, 'WRITE');
+ 
+UPDATE authorities SET name="ROLE_USER" WHERE id=1;
+UPDATE authorities SET name="ROLE_ADMIN" WHERE id=2;
