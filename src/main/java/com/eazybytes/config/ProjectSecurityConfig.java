@@ -10,9 +10,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+
+import com.eazybytes.filter.RequestValidationBeforeFilter;
 
 @Configuration
 public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -45,7 +48,8 @@ public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
 				return config;
 			}			
 		}).and()
-		.csrf().ignoringAntMatchers("/contact").csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
+		.csrf().ignoringAntMatchers("/contact").csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+		.and().addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
 		.authorizeRequests()
 		.antMatchers("/myAccount").hasRole("USER") // for ROLE_USER in the authorities table
 		.antMatchers("/myBalance").hasAnyRole("USER","ADMIN")
