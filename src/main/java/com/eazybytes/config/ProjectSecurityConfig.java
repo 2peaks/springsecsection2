@@ -1,5 +1,6 @@
 package com.eazybytes.config;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import javax.servlet.http.HttpServletRequest;
@@ -8,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -38,7 +40,8 @@ public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
 //		http.formLogin();
 //		http.httpBasic();
 		
-		http.cors().configurationSource(new CorsConfigurationSource() {
+		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and() // disable session since we have JWT
+		.cors().configurationSource(new CorsConfigurationSource() {
 			@Override
 			public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
 				CorsConfiguration config = new CorsConfiguration();
@@ -46,12 +49,13 @@ public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
 				config.setAllowedMethods(Collections.singletonList(("*")));
 				config.setAllowCredentials(true);
 				config.setAllowedHeaders(Collections.singletonList("*"));
+				config.setExposedHeaders(Arrays.asList("Authorization"));
 				config.setMaxAge(3600L);
 				return config;
 			}			
 		}).and()
-		.csrf().ignoringAntMatchers("/contact").csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-		.and().addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
+		.csrf().disable() // disable csrf since we have JWT .ignoringAntMatchers("/contact").csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+		.addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
 		.addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
 		.addFilterAt(new AuthoritiesLoggingAtFilter(), BasicAuthenticationFilter.class) // don't use addFilterAt. No use.
 		.authorizeRequests()
