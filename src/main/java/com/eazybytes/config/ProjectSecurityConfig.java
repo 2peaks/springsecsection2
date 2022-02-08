@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -23,6 +24,7 @@ import com.eazybytes.filter.JWTTokenValidatorFilter;
 import com.eazybytes.filter.RequestValidationBeforeFilter;
 
 @Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true,securedEnabled = true,  jsr250Enabled = true)
 public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	/*
@@ -64,13 +66,11 @@ public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
 		.authorizeRequests()
 		.antMatchers("/myAccount").hasRole("USER") // for ROLE_USER in the authorities table
 		.antMatchers("/myBalance").hasAnyRole("USER","ADMIN")
-		.antMatchers("/myLoans").hasRole("ROOT")
-		.antMatchers("/myCards").authenticated()
+		.antMatchers("/myLoans").authenticated()
+		.antMatchers("/myCards").hasAnyRole("USER", "ADMIN")
 		.antMatchers("/user").authenticated()
 		.antMatchers("/notices").permitAll()
-		.antMatchers("/contact").permitAll();
-		http.formLogin();
-		http.httpBasic();	
+		.antMatchers("/contact").permitAll().and().httpBasic();	
 	}
 // ################################################################	
 //	In memory authentication with user 'admin' and 'user'

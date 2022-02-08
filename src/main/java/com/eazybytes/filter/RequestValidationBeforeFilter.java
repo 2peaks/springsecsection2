@@ -28,14 +28,17 @@ public class RequestValidationBeforeFilter implements Filter {
 			throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
+		System.out.println("RequestValidationBeforeFilter doFilter()");
 		String header = req.getHeader(AUTHORIZATION);
 		if (header != null) {
+			System.out.println("Header is not null:" + header);
 			header = header.trim();
 			if (StringUtils.startsWithIgnoreCase(header, AUTHENTICATION_SCHEME_BASIC)) {
 				byte[] base64Token = header.substring(6).getBytes(StandardCharsets.UTF_8);
 				byte[] decoded;
 				try {
 					decoded = Base64.getDecoder().decode(base64Token);
+					
 					String token = new String(decoded, getCredentialsCharset(req));
 					int delim = token.indexOf(":");
 					if (delim == -1) {
@@ -50,6 +53,8 @@ public class RequestValidationBeforeFilter implements Filter {
 					throw new BadCredentialsException("Failed to decode basic authentication token");
 				}
 			}
+		} else {
+			System.out.println("Header is null");
 		}
 		chain.doFilter(request, response);
 	}
