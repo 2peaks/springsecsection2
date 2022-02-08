@@ -13,12 +13,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.eazybytes.filter.AuthoritiesLoggingAfterFilter;
 import com.eazybytes.filter.AuthoritiesLoggingAtFilter;
+import com.eazybytes.filter.JWTTokenGeneratorFilter;
+import com.eazybytes.filter.JWTTokenValidatorFilter;
 import com.eazybytes.filter.RequestValidationBeforeFilter;
 
 @Configuration
@@ -57,6 +58,8 @@ public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
 		.csrf().disable() // disable csrf since we have JWT .ignoringAntMatchers("/contact").csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 		.addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
 		.addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
+		.addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)
+		.addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
 		.addFilterAt(new AuthoritiesLoggingAtFilter(), BasicAuthenticationFilter.class) // don't use addFilterAt. No use.
 		.authorizeRequests()
 		.antMatchers("/myAccount").hasRole("USER") // for ROLE_USER in the authorities table
